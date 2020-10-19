@@ -1,0 +1,143 @@
+---
+title: "Aufgabe 2.7"
+author: "D. Pascual"
+date: "16 10 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+ITSDaten <- read.csv2(file = "ITSDaten.csv", fileEncoding = "utf8")
+```
+
+
+```{r, eval=FALSE}
+View(ITSDaten)
+```
+
+
+```{r}
+str(ITSDaten)
+```
+
+
+
+
+## Aufgabenblatt 2.7
+### Aufgabe 2
+
+
+```{r}
+library(ggplot2)
+library(MKdescr)
+```
+
+
+```{r, fig.width=9}
+barplot(table(ITSDaten$Ergebnis))
+```
+
+## Interpretation:
+In dem Balkendiagramm werden die Patienten, die auf der Intensivstation (ITS) waren in verschiedene Kategorien eingeteilt, die dem Betrachter der Statistik verraten, wie es mit den verschiedenen Patienten nach dem Aufenthalt in der ITS weiter ging. So zeigt der Balken auf der linken Seite die Summe aller Patienten, die in ein anderes Krankenhaus verlegt werden, der zweite Balken von links die Summe aller Patienten, die nach der Behandlung auf der ITS wieder nach Hause gekommen sind, der zweite Balken von rechts wie viele Patienten nach dem Aufenthalt in der ITS pflegebedürftig sind oder eine REHA antreten und der letzte Balken auf der rechten Seite wie viele der Patienten stationär verstorben sind. 
+
+
+## Aufgabenblatt 2.7
+## Aufgabe 5
+Berechnen Sie das 95%~ Quantil, Median, Interquartilsabstand, MAD, arithmetisches Mittel, Standardabweichung,Variationskoeffizient, Schiefe und Kurtosis für die Variable LOS. Vergleichen und
+interpretieren Sie die Werte. Was bedeuten die Ergebnisse für die Verteilung der Werte?
+
+```{r, eval=FALSE}
+View(ITSDaten$LOS)
+```
+
+## 95%-Quantil
+```{r}
+quantile(ITSDaten$LOS, probs = 0.95)
+```
+
+
+##Median
+```{r}
+median(ITSDaten$LOS)
+```
+
+##Interquartilsabstand
+
+
+```{r}
+sIQR(ITSDaten$LOS)
+```
+
+
+## MAD
+
+```{r}
+mad(ITSDaten$LOS)
+```
+
+
+## arithmetisches Mittel
+
+```{r}
+mean(ITSDaten$LOS)
+```
+
+
+## Standartabweichung
+
+```{r}
+sd(ITSDaten$LOS)
+```
+
+
+## Variationskoeffizient
+
+```{r}
+CV(ITSDaten$LOS)
+```
+
+
+##Schiefe
+```{r}
+Skew(ITSDaten$LOS)
+```
+
+rechtsschief
+
+## Kurtosis
+
+```{r}
+Kurt(ITSDaten$LOS)
+```
+
+
+## Aufgabenblatt 2.7
+## Aufgabe 8
+
+Zeichnen Sie einen Box-und-Whisker Plot sowie ein Histogramm zusammen mit einem Dichteplot
+für die Variable LOS. Verwenden Sie hierfür sowohl die Standardfunktionen als auch die Funktionen
+aus dem Paket "ggplot2" (Wickham (2009)). Beschreiben und interpretieren Sie die Plots.
+
+
+```{r}
+ggplot(ITSDaten$LOS, aes(x = 1, y = Temperatur)) +
+  geom_boxplot() + xlim(0, 2) + ylab("Maximale Körpertemperatur") +
+  geom_jitter(height = 0, width = 0.1, alpha = 0.1) + 
+  ggtitle("500 ITS Patienten")
+```
+
+
+
+
+
+
+
+
+
+
+
+
