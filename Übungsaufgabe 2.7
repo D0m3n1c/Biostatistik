@@ -1,0 +1,215 @@
+---
+title: "Katitel 2 Pascual"
+author: "D. Pascual"
+date: "19 10 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+ITSDaten <- read.csv2(file = "ITSDaten.csv", fileEncoding = "utf8")
+```
+
+
+```{r, eval=FALSE}
+View(ITSDaten)
+```
+
+
+```{r}
+str(ITSDaten)
+```
+
+## Laden der Libraries
+
+```{r}
+library(ggplot2)
+library(MKdescr)
+library(DescTools)
+```
+
+## Aufgabenblatt 2.7
+### Aufgabe 2
+
+Verwenden Sie ein Balkendiagramm, um die relativen Häufigkeiten für die Variable Ergebnis
+darzustellen. Verwenden Sie hierfür sowohl die Standardfunktion barplot also auch das Paket
+"ggplot2"
+
+
+```{r, fig.width=9}
+barplot(table(ITSDaten$Ergebnis), main = "500 ITS Patienten", ylab = "Relative Häufigkeit")
+```
+
+ich habe nicht verstanden,wie man die Relative Häufigkeit mit der "barplot"-Standardfunktion berechnet
+
+```{r, fig.width=9}
+ggplot(ITSDaten, aes(x=OP)) +
+  geom_bar(aes(y = (..count..)/sum(..count..)), width = 0.5) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  ggtitle("Entlassung") + ylab("Relative Häufigkeit [%]")
+```
+
+
+## Interpretation:
+In dem Balkendiagramm werden die Patienten, die auf der Intensivstation (ITS) waren in verschiedene Kategorien eingeteilt, die dem Betrachter der Statistik verraten, wie es mit den verschiedenen Patienten nach dem Aufenthalt in der ITS weiter ging. So zeigt der Balken auf der linken Seite die Summe aller Patienten, die in ein anderes Krankenhaus verlegt werden, der zweite Balken von links die Summe aller Patienten, die nach der Behandlung auf der ITS wieder nach Hause gekommen sind, der zweite Balken von rechts wie viele Patienten nach dem Aufenthalt in der ITS pflegebedürftig sind oder eine REHA antreten und der letzte Balken auf der rechten Seite, wie viele der Patienten stationär verstorben sind. 
+
+
+## Aufgabenblatt 2.7
+## Aufgabe 5
+Berechnen Sie das 95%~ Quantil, Median, Interquartilsabstand, MAD, arithmetisches Mittel, Standardabweichung,Variationskoeffizient, Schiefe und Kurtosis für die Variable LOS. Vergleichen und
+interpretieren Sie die Werte. Was bedeuten die Ergebnisse für die Verteilung der Werte?
+
+LOS = Aufenthaltstage auf der intensivstation? 
+(length of stay)
+
+
+## 95%-Quantil
+```{r}
+quantile(ITSDaten$LOS, probs = 0.95)
+```
+
+
+
+## Median
+```{r}
+median(ITSDaten$LOS)
+```
+Der Median ist der zentrale Wert über der Summe aller Werte. In diesem Fall sagt er aus, dass mindestens die Hälfte aller Patienten einen Tag auf der Intensivstation verbringen. 
+
+
+## Interquartilsabstand
+
+
+```{r}
+IQR(ITSDaten$LOS)
+```
+
+50 % unserer Patienten haben einen Streubreite von 4 Aufenthaltstagen auf der ITS. 
+
+
+## MAD
+
+```{r}
+mad(ITSDaten$LOS)
+```
+Der Median hat eine absolute Abweichung von 0 
+
+## arithmetisches Mittel
+
+```{r}
+mean(ITSDaten$LOS)
+```
+Die Funktion mean berechnet das arithmetische Mittel der Aufenthaltsdauer. Das arithmetische Mittel beträgt 5,29 Tage. Es entshet hierbei der Eindruck, dass die meisten Patienten 5 Tage auf der ITS behandelt werden müssen. Das ist jedoch ein Trugschluß, da das arithmetische Mittel durch Ausreißerwerte von Patienten, die überdurschnittlich lange auf einer ITS behandelt werden verfälscht wird.
+
+## Standardabweichung
+
+```{r}
+sd(ITSDaten$LOS)
+```
+Es liegt in der Natur der Standardabweichung, dass große Abweichungen eine höhere Gewichtung erfahren (wegen [xi - xquer]²). Aus diesem Grund ist der Wert scheinbar ziemlich groß geworden. 
+
+## Variationskoeffizient
+
+```{r}
+CV(ITSDaten$LOS)
+```
+Der Variationskoeffizient ist ein relatives Streuungsmaß und normiert damit die Varianz. Ohne Wissen über den Mittelwert kann der Variationskoeffizient nicht interpretiert werden. 
+
+## Schiefe
+```{r}
+Skew(ITSDaten$LOS)
+```
+
+rechtsschief
+
+## Kurtosis
+
+```{r}
+Kurt(ITSDaten$LOS)
+```
+Es handelt sich um eine positive Kurtosis
+
+# Aufgabenblatt 2.7
+## Aufgabe 8
+
+Zeichnen Sie einen Box-und-Whisker Plot sowie ein Histogramm zusammen mit einem Dichteplot
+für die Variable LOS. Verwenden Sie hierfür sowohl die Standardfunktionen als auch die Funktionen
+aus dem Paket "ggplot2" (Wickham (2009)). Beschreiben und interpretieren Sie die Plots.
+
+#Box-und-Whisker Plot mit Standardfunktion
+
+
+```{r}
+boxplot(ITSDaten$LOS , main = "500 ITS Patienten", ylab = "Length Of Stay")
+```
+
+
+
+# Box-und-Whiskers Plot mit ggplot2
+
+```{r}
+ggplot(ITSDaten, aes(x = 1, y = LOS))+
+  geom_boxplot() + xlim(0, 2) + ylab("Length Of")+ 
+  ggtitle("500 ITS Patienten")
+```
+
+Im Box-und-Whiskers Plot können verschiedene statistische Momente betrachtet werden. Unter anderem kann der Median betrachtet werden, der in unserem Fall, wie schon weiter oben berechnet bei 0 liegt. Das Diagramm wird durch viele Ausreißer verzerrt.
+
+# Histogramm mit einem Dichteplot mit Standardfunktion
+
+```{r}
+hist(ITSDaten, breaks = seq(from = 1, to = 25, by = 0.5),
+     xlab = "Maximale Körpertemperatur", ylab = "Dichte", freq = FALSE,
+     main = "500 ITS Patienten")
+lines(density(ITSDaten$LOS))
+```
+
+
+
+# Histogramm mit Dichteplot mit ggplot2
+
+```{r}
+ggplot(ITSDaten, aes(x=LOS)) +
+  geom_histogram(aes(y=..density..), binwidth = 0.5, closed = "right") +
+  geom_density(color = "orange") + ylab("Dichte") +
+  xlab("Length Of Stay") +
+  ggtitle("500 ITS Patienten")
+ggplot(ITSDaten, aes(x=LOS)) +
+  geom_histogram(aes(y=..density..), binwidth = 0.5, closed = "left") +
+  geom_density(color = "orange") + ylab("Dichte") +
+  xlab("Length Of Stay") +
+  ggtitle("500 ITS Patienten")
+```
+
+Es ist deutlich zu erkennen, dass die Dichte mit voranschreiten der Zeit abnimmt. So ist die größte Patientendichte bei einem Tag deutlich zu erknennen. Im Anschluß sinkt die Dichte deutlich ab, weil weniger Patienten sich auf der ITS befinden.
+
+# Aufgabenblatt 2.7
+## Aufgabe 11
+
+Überprüfen Sie auf geeignete Weise (!), ob es einen Zusammenhang zwischen den Variablen
+Alter und SAPS.II gibt. Interpretieren Sie die Ergebnisse und stellen Sie die Daten geeignet
+graphisch dar. Ist die graphische Darstellung in Übereinstimmung mit Ihren Berechnungen?
+
+SAV.II = severity of disease 
+
+```{r}
+ggplot(ITSDaten, aes(x=Alter, y=SAPS.II)) +
+  geom_point(shape=19, alpha=0.25) +
+  ggtitle("500 ITS Patienten") + xlab("Alter") +
+  ylab("SAPS.II")
+```
+
+Die dargestellte Graphik zeigt den SAPS.II - Score der Patienten mit Berücksichtigung des Alters der Patienten. Es wird deutlich, dass mit voranschreitendem Alter der SAPS.II-Score höher wird, da mit Zunahme des Alters sich der gesamtgesundheitliche Zustand eines Menschen verschlechtert. Die Punktdichte nimmt am rechten Teil der Graphik wieder ab, weil die Anzahl der noch lebenden Patienten hier nichtmehr groß ist. 
+
+## Aufgabenblatt 2.7
+## Aufgabe 14
+
+```{r}
+PercTable(table(ITSDaten$Geschlecht, ITSDaten$LOS), rfrq = "010")
+```
+
+Hier müssen wir uns ein anderes Hilfmittel überlegen die Werte darzustellen. 
