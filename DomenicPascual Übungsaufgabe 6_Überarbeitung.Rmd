@@ -1,0 +1,858 @@
+---
+title: "Übungsaufgaben 6"
+author: "D. Pascual"
+date: "10 12 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r message=FALSE}
+library(DescTools)
+library(scales)
+library(ggplot2)
+library(MKdescr)
+library(RColorBrewer)
+library(ggsci)
+library(distr)
+library(distr6)
+library(distrMod)
+library(qqplotr)
+library(RobLox)
+library(MKinfer)
+library(ROptEst)
+library(RobExtremes)
+library(MKpower)
+library(MKclass)
+library(MASS)
+library(boot)
+library(RVAideMemoire)
+library(coin)
+library(exactRankTests)
+library(ggpubr)
+library(datarium)
+library(gridExtra)
+library(NSM3)
+```
+
+```{r}
+ITSDaten <- read.csv2(file = "ITSDaten.csv", fileEncoding = "utf8")
+```
+
+
+Aufgabe 1)
+
+In einer randomisierten und kontrollierten Studie wurde eine neue Behandlung zur Vermeidung der Übertragung von HIV untersucht. Es wurden keine signifikanten Unterschiede zwischen der neuen Behandlung und einer Kontrollgruppe gefunden. Das Verhältnis der neu aufgetretenen Erkrankungen zwischen den beiden Gruppen war 1,0. Das 95%-Konfidenzintervall für dieses Verhältnis war [0,63; 1,58]. Kann man auf der Basis dieser Ergebnisse sicher sein, dass die neue Behandlung keinen Effekt hat? Was könnte in diesem Kontext die Aussage: “Die Abwesenheit von Evidenz ist nicht die Evidenz für Abwesenheit” (“Absence of Evidence Is Not Evidence of Absence”) bedeuten?
+
+
+
+"Die Abwesenheit von Evidenz is nicht die Evidez für Abwesenheit" bedeutet in diesem Zusammenhang, dass nur weil augescheinlich die Behandlung zur Vermeidung der Übertragung von HIV keinen signifikanten Unterschied zwischen der neuen Behandlung und der Kontrollgurppe besteht, es nicht unbedingt sein muss, dass die Therapie nicht sinnvoll ist. Vor allem die Gruppengröße der Teilnehmer ist ein wichtiger Faktor, mit dessen Hilfe man eine Aussage über die Behandlung treffen kann. Die Gruppengröße wurde jedoch nicht beschrieben, weswegen man an dieser Stelle keine genaue Aussage treffen kann. Je kleiner die Gruppengröße ist, desto mehr wird das Ergebnis von einem gewissen "Zufall" verfälscht. Bei HIV kommt hinzu, dass sowohl die Patientengruppe, wie auch die Kontrollgruppe sich nicht mit dem Virus angesteckt haben könnten, weil eine Infektion mit HIV relativ unwahrscheinlich ist.
+
+
+
+
+
+Aufgabe 2)
+
+Die Verantwortlichen der FranSO-Studie (Kemmler et al. (2017)) nahmen für die Fallzahlberechnung für den primären Endpunkt (Sarkopenie z-Score) eine Differenz der Mittelwerte von 1.0 an, bei einer Standardabweichung von 1.4. Berechnen Sie die Fallzahl mit dem Student t-Test. Verwenden Sie ein Signifikanzniveau von 5% und eine Power von 80%.Wie stark erhöht sich die Fallzahl, wenn Sie die Power auf 90% erhöhen? In die Studie wurden letztendlich 33 bzw. 34 Probanden pro Gruppe eingeschlossen. Wie groß ist die Power der Studie, wenn Sie eine Fallzahl von 33 pro Gruppe zugrundelegen?
+
+
+
+```{r}
+power.t.test(delta = 1.0, sd = 1.4,  sig.level = 0.05, power = 0.8, )
+```
+
+Mit dem Student t-Test wurde eine Fallzahl von 31.75716 berechnet bei einer Power von 80 %.
+
+```{r}
+power.t.test(delta = 1.0, sd = 1.4,  sig.level = 0.05, power = 0.9, )
+```
+
+Mit einer Power von 90 % erhöht sich die Fallzahl auf 42.171301. 
+
+```{r}
+power.t.test( n = 33, delta = 1.0, sd = 1.4,  sig.level = 0.05, )
+```
+
+Bei einer Fallzahl von 33 ist die Power der Studie bei 81.5 %.
+
+```{r}
+power.t.test(n = 34, delta = 1.0, sd = 1.4,  sig.level = 0.05, )
+```
+
+Bei einer Fallzahl von 34 ist die Power der Studie bei 82.69%.
+
+
+Es ist deutlich zu erkennen, dass die Anzahl der Probanden eine direkte Auswirkung auf die Teststärke der Studie hat. Je höher die Anzahl der Probanden, desto höher ist die Teststärke der Studie.
+
+
+zweiseitiger power test soll gemacht werden
+
+Aufgabe 3)
+
+Wir erwarten für eine neu zu planende Studie eine Differenz der Mittelwerte von 0.70 für den gewählten primären Endpunkt, wobei wir annehmen, dass die Standardabweichung der Kontrollgruppe bei 0.75 und die Standardabweichung der Behandlungsgruppe bei 1.40 liegen wird. Verwenden Sie für die Fallzahlplanung den Welch t-Test mit einem Signifikanzniveau von 5% und einer Power von 90%.Wie verändert sich die Fallzahl, wenn Sie stattdessen den Hsu t-Test für den
+Fallzahlplanung heranziehen? Welche Fallzahl erhalten Sie für den WMW-Test? Untersuchen Sie außerdem, wie sich die Fallzahl verändert, wenn die Differenz der Mittelwerte tatsächlich etwas´kleiner oder größer ist, als erwartet. Betrachten Sie hierfür das Interval [0:60; 0:80]. Verwenden Sie für die Berechnungen die Funktionen power.welch.t.test, power.hsu.t.test und sim.ssize.wilcox.test aus dem Paket "MKpower" (Kohl (2020d)). Weitere Einzelheiten zur Anwendung dieser Funktionen finden Sie auf den Hilfeseiten zu den Funktionen sowie in der
+Vignette des Paketes, welche Sie mit vignette("MKpower") aufrufen können.
+
+```{r}
+power.welch.t.test( delta = 0.7, sig.level = 0.05, sd1 = 0.75, sd2 = 1.4, power = 0.9 )
+```
+
+Welch t-Test
+```{r}
+power.hsu.t.test( delta = 0.7, sig.level = 0.05, sd1 = 0.75, sd2 = 1.4, power = 0.9 )
+```
+
+
+Mit dem Welch t-Test erhält man eine Fallzahl von 55.37028 und mit dem Hsu t-Test erhält man eine Fallzahl von 56.04787
+
+```{r}
+rx <- function(Kontrollgruppe) rnorm(Kontrollgruppe, mean = 0.7, sd = 0.75)
+ry <- function(Behandlungsgruppe) rnorm(Behandlungsgruppe, mean = 0.7, sd = 1.4)
+sim.ssize.wilcox.test(rx = rx, ry = ry, sig.level = 0.05, power = 0.9, )
+```
+
+Der WMW-Test gibt mehrere Szenarien für die Fallzahl an. 
+Die berechneten Werte für die Fallzahlen lautet:
+n = 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+Die dazu berechnete Testgenauigkeit lautet
+emp.power = 0.0525, 0.0522, 0.0620, 0.0540, 0.0582, 0.0548, 0.0556, 0.0628, 0.0601, 0.0582, 0.0620, 0.0559, 0.0594, 0.0548, 0.0550, 0.0600, 0.0590, 0.0604, 0.0627, 0.0564
+
+```{r}
+power.welch.t.test( delta = 0.8, sig.level = 0.05, sd1 = 0.75, sd2 = 1.4, power = 0.9 )
+```
+Wird die Differenz für den Mittelwert bei einem Welch t-Test etwas größer gewählt(um 0.1), sinkt die Zahl der Teilnehmer auf 42.69957
+
+```{r}
+power.welch.t.test( delta = 0.6, sig.level = 0.05, sd1 = 0.75, sd2 = 1.4, power = 0.9 )
+```
+
+Wird die Zahl für die Differenzen für den Mittelwert etwas niedirger gesetzt (um 0.1), steigt die Zahl der benötigten Teilnehmer auf 74.89729.
+
+```{r}
+power.hsu.t.test( delta = 0.8, sig.level = 0.05, sd1 = 0.75, sd2 = 1.4, power = 0.9 )
+```
+Wird die Differenz für den Mittelwert bei dem Hsu t-Test etwas erhöht (um 0.1), sinkt die Zahl der benötigten Teilnehmer auf 43.38049.
+
+```{r}
+power.hsu.t.test( delta = 0.6, sig.level = 0.05, sd1 = 0.75, sd2 = 1.4, power = 0.9 )
+```
+Wird die Zahl für die Differenz für den Mittelwert bei einem Hsu t-Test etwas kleiner (um 0,1), steigt die Zahl der benötigten Teilnehmer auf 75.57186.
+
+```{r}
+rx <- function(Kontrollgruppe) rnorm(Kontrollgruppe, mean = 0.6, sd = 0.75)
+ry <- function(Behandlungsgruppe) rnorm(Behandlungsgruppe, mean = 0.6, sd = 1.4)
+sim.ssize.wilcox.test(rx = rx, ry = ry, sig.level = 0.05, power = 0.9, )
+```
+Die berechneten Werte für die Fallzahlen lautet:
+n = 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+Die dazu berechnete Testgenauigkeit lautet:
+emp.power = 0.0496, 0.0567, 0.0571, 0.0546, 0.0578, 0.0589, 0.0575, 0.0543, 0.0592, 0.0567, 0.0568, 0.0605, 0.0538, 0.0575, 0.0557, 0.0593, 0.0589, 0.0604, 0.0575, 0.0574
+
+Die berechneten Werte für emp.power sinken, wenn die Differenz für den Mittelwert auf 0.6 gestellt wird.
+```{r}
+rx <- function(Kontrollgruppe) rnorm(Kontrollgruppe, mean = 0.8, sd = 0.75)
+ry <- function(Behandlungsgruppe) rnorm(Behandlungsgruppe, mean = 0.8, sd = 1.4)
+sim.ssize.wilcox.test(rx = rx, ry = ry, sig.level = 0.05, power = 0.9, )
+```
+Die berechneten Werte für die Fallzahlen lautet:
+n = 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+ie dazu berechnete Testgenauigkeit lautet:
+emp.power = 0.0509, 0.0576, 0.0630, 0.0572, 0.0590, 0.0624, 0.0559, 0.0607, 0.0564, 0.0587, 0.0526, 0.0582, 0.0526, 0.0594, 0.0547, 0.0544, 0.0577, 0.0569, 0.0584, 0.0573
+Die berechneten Werte für emp.power steigen, wenn die Differenz für den Mittelwert auf 0.6 gestellt wird.
+
+
+
+
+Aufgabe 4)
+Überprüfen Sie die Vermutung, dass auf einer ITS mehr Männer als Frauen behandelt werden. Formulieren Sie die Hypothesen und verwenden Sie sowohl einen exakten als auch einen asymptotischen Test, um dies zu überprüfen. Stellen Sie die Daten mit dem Testergebnis geeignet grafisch dar.
+
+Hypothese:
+Auf der ITS werden mehr Männer als Frauen behandelt.
+
+```{r}
+table(ITSDaten$Geschlecht)
+binom.test(325, 500, p = 0.5, alternative = "greater")
+prop.test(325, 500, p = 0.5, alternative = "greater")
+```
+Um die Hypothese zu prüfen wurden Daten auf einer ITS erhoben. Der p-Wert  liegt bei einem exakten t-Test bei 9.513e-12 und ist somit deutlich unter dem angestrebten Signifikanzniveau von 5%. Das bedeutet, dass die Hypothese zutrifft und mehr Männer als Frauen auf der ITS behandelt werden. Bei einem asymptotischen t-Test liegt der p-Wert bei 9.513e-12 und liegt damit auch unter dem angestrebten Signifikanzniveau von 5%. Damit sagt auch dieser Test aus, dass mehr Männer als Frauen auf der ITS behandelt werden.
+
+```{r, fig.width=9}
+barplot(table(ITSDaten$Geschlecht), main = "Geschlechterverteilung auf der ITS",
+        ylab = "Anzahl der jeweiligen Patienten")
+```
+
+häufigkeiten darstellen
+
+Aufgabe 5)
+
+Untersuchen Sie, ob auf einer ITS Männer signifikant häufiger versterben als Frauen. Berechnen
+Sie sowohl einen exakten als auch einen asymptotischen Test, um dies zu überprüfen. Verwenden
+Sie als Ausgangspunkt die 2 × 2 Kontingenztafel, die Sie mittels
+table(ITSDaten$Geschlecht, ITSDaten$Ergebnis == "Verstorben")
+erhalten. Stellen Sie die Daten mit dem Testergebnis geeignet grafisch dar.
+
+Hypothese: 
+Auf der ITS sterben Männer signifikant häufiger als Frauen.
+
+```{r}
+## 2x2 Kontigenztafel
+kont.tafel <- table(ITSDaten$Geschlecht, ITSDaten$Ergebnis == "Verstorben")
+kont.tafel
+```
+```{r}
+## asymptomatischer Test
+prop.test(c(30, 39), c(175, 325))
+binomDiffCI(a=30, b= 39, c=175, d=312)
+chisq.test(kont.tafel)
+```
+Alle Tests zeigen einen unterschied zwischen den beiden Gruppen. Gruppe 1, welche die männliche Partei darstellt, hat in beiden Fällen einen etwas höheren Wert. Dies würde die Hypothese bestätigen. Mit dem x^2-Test können wir darauf schließen, dass es eine Abhängigkeit gibt, zwischen dem GEschlecht und dem Versterben auf der ITS.
+
+```{r}
+## exakter Test
+fisher.test(kont.tafel)
+```
+Die Odds-Ratio für das versterben auf der ITS ist 1.5. Somit kann davon ausgegangen werden, dass die Männer ein signifikant höheres Risiko besitzen. 
+
+```{r}
+##Grafische Darstellung
+barplot((kont.tafel), main = "Grafische Darstellung der Verstorbenen auf der ITS", ylab="Anzahl der Patienten", legend = TRUE)
+```
+Das Schaubild ermöglicht einen guten Überblick über die Verstorbenen auf der ITS. Die Patienten unter "TRUE" sind verstorben. Anhand vom Schaubild kann man erkenn, dass der schwarze Anteil, welcher den männlichen Teil darstellt, etwas größer ist als der der Frauen. Somit versterben mehr Männer als Frauen auf der ITS. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Untersuchen Sie, ob auf einer ITS Männer signifikant häufiger versterben als Frauen. Berechnen Sie sowohl einen exakten als auch einen asymptotischen Test, um dies zu überprüfen. Verwenden Sie als Ausgangspunkt die 2 x 2 Kontingenztafel, die Sie mittels table(ITSDaten$Geschlecht, ITSDaten$Ergebnis == "Verstorben") erhalten. Stellen Sie die Daten mit dem Testergebnis geeignet grafisch dar.
+
+
+```{r}
+gestorben<- table(ITSDaten$Geschlecht, ITSDaten$Ergebnis == "Verstorben")
+```
+
+Hypothese: Auf der ITS versterben Männer signifikant häufiger als Frauen. 
+
+```{r }
+## exakter Test von Fisher
+fisher.test(gestorben)
+## chi^2-Test
+chisq.test(gestorben)
+```
+
+Der p-Wert des Fisher-Tests liegt bei 13% und liegt damit über dem angestrebten Signifikanzniveau von 5 %. Damit wäre die Hypotehse "Aufd der ITS verstereben mehr Männder als Frauen" wiederlegt. 
+Auch der Ch^2-Test kommt auf ein Ergebnis von 14 % was über dem angestrebeten Signifikanzniveau von 5 % liegt. Das bedeutet, dass die Nullhypothese nicht zutrifft. 
+
+```{r }
+barplot(gestorben)
+```
+
+
+balkendiagramm wäre heir sinnvoll (barplot der relativen häufigkeiten)
+
+häufigkeiten darstellen
+
+Aufgabe 6)
+
+Untersuchen Sie, ob Patienten auf einer ITS im Mittel signifikant älter als 60 Jahre sind. Verwenden Sie den 1-Stichproben t-Test sowie den Wilcoxon Vorzeichentest für die Analyse. Welcher Test erscheint Ihnen angebrachter? Stellen Sie die Daten mit dem Testergebnis geeignet grafisch dar.
+
+```{r }
+t.test(ITSDaten$Alter, mu = 60, alternative = "greater")
+```
+
+Der p-Wert des Stichproben t-Tets liegt bei 2.295e-06 und ist damit deutlich unter der angestrebten Signifikanzniveau von 5 %. Das bedeutet, dass Patienten auf der ITS nach dem 1-Stichproben t-Test signifikant älter als 60 Jahre sind.  
+
+```{r }
+wilcox.test(ITSDaten$Alter, mu = 60, alternative = "greater", conf.int = TRUE)
+```
+
+
+Der p-Wert des Stichproben t-Tets liegt bei 6.809e-09 und ist damit deutlich unter der angestrebten Signifikanzniveau von 5 %. Das bedeutet, dass Patienten auf der ITS nach dem 1-Stichproben Wilcox Vorzeichentest signifikant älter als 60 Jahre sind.  
+
+Der Wilcox-Test erscheint in diesem Szenario als geeigneter, da er die große Varianz, die die Patienten teilweise in ihrem Alter haben berücksichtigt.
+
+
+```{r }
+ggplot(data = ITSDaten, aes(x = factor(Alter, 
+                            y = Alter, 
+                            fill = factor(Geschlecht, levels = c("weiblich", 
+                                                              "männlich")))) +
+  geom_hline(yintercept = 60)  +
+  geom_boxplot() + stat_compare_means(label.y = 60, label.x = 1) + 
+  ylab("Alter") + ylim(21, 90) + 
+  annotate(geom = "text", x = c(1, 2), y = c(32.7, 32.7), 
+           label = c("n = 175", "n = 325"), color = pal_nejm()(2)) +
+  xlab("Patienten")
+```
+
+bpxplot nehmen
+
+
+
+Aufgabe 7)
+
+Gehen Sie davon aus, dass sich die logarithmierten Bilirubinwerte von ITS-Patienten durch eine Normalverteilung beschreiben lassen. Vergleichen Sie die mittlere log-Bilirubinkonzentration der ITS-Patienten mit und ohne Leberversagen mit Hilfe eines t-Tests. Erscheint Ihnen der klassische t-Test oder der Welch-t-Test für diese Situation angebrachter? Verwenden Sie in einem weiteren Schritt den WMW-Test und berechnen Sie den Test einmal mit und einmal ohne die Werte zu logarithmieren. Vergleichen Sie die beiden Ergebnisse. Was stellen Sie fest? Was ist der Grund dafür? Stellen Sie die Daten und die Testergebnisse geeignet grafisch dar.
+
+```{r}
+sd(log(ITSDaten$Bilirubin)[ITSDaten$Leberversagen == "1"])
+## Logarithmierte Bilirubinwerte von Patienten mit Leberversagen = 1.07
+sd(log(ITSDaten$Bilirubin)[ITSDaten$Leberversagen =="0"])
+## Logarithmierte Bilirubinwerte von Patienten mit Leberversagen = 0.60
+
+logbilirubin <- log(ITSDaten$Bilirubin)
+##klassischer t-Test
+t.test(logbilirubin ~ Leberversagen, data = ITSDaten, var.equal = TRUE)
+##Welch-t-Test
+t.test(logbilirubin ~ Leberversagen, data = ITSDaten)
+
+##Wilcoxon-Mann-Whitney U-Test mit logarithmierten Bilirubinwert
+wilcox.test(logbilirubin ~ Leberversagen, data = ITSDaten, conf.int = TRUE)
+
+##Wilcox-Mann-Whitney U-Test ohne Logarithmierten Bilirubinwert
+wilcox.test(Bilirubin ~ Leberversagen, data = ITSDaten, conf.int = TRUE)
+```
+
+Der p-Wert des klassischen t-Tests ist 2.2e-16 und liegt damit deutlich unter der angestrebten Signifikanzgrenze von 5%. Der p-Wert bei einem Welch-t-Test ist 3.169e-07 und liegt damit auch unter der angestrebten Signifikanzgrenze. 
+Für die Situation ist der Welch-Test angebrachter, weil sich die Varianzen der einzelnen Bilirubinwerte unterscheiden. 
+
+Sowohl der logarithmierte, wie auch der nicht logarithmierte WMW-Test besitzt einen p-Wert von 3.388e-11. Damit ist wieder das Ziel unterhalb der Signifikanzgrenze von 5% zu sein erreicht. Das 95%-Konfidenzintervall unterscheidet sich bei beiden varianten. Da sich jedoch die Ränge bei beiden Varianten nicht verändern, bleibt der p-Wert gleich. 
+
+
+```{r }
+## grafische Darstellung
+ggplot(data = ITSDaten, aes(x = factor(Leberversagen, levels = c(1, 
+                                                              0)), 
+                            y = logbilirubin, 
+                            fill = factor(Leberversagen, levels = c(1, 
+                                                              0)))) +
+  geom_hline(yintercept = mean(ITSDaten$logBili)) + scale_fill_nejm(name = "Leberversagen") +
+  geom_boxplot() + stat_compare_means(label.y = 0.5, label.x = 1.25) + 
+  ylab("logarithmierte Bilirubinwerte") + ylim(0, 7) + 
+  annotate(geom = "text", x = c(1, 2), y = c(7, 6), 
+           label = c("n = 175", "n = 325"), color = pal_nejm()(2)) +
+  xlab("Geschlecht")
+
+```
+
+Aufgabe 8)
+
+Vergleichen Sie die mittlere Aufenthaltsdauer von Männern und Frauen auf der ITS. Verwenden Sie hierzu den WMW-Test. Stellen Sie die Daten und die Testergebnisse geeignet grafisch dar.
+
+```{r}
+wilcox.test(LOS ~ Geschlecht, data = ITSDaten, conf.int = TRUE)
+wilcox.exact(LOS ~ Geschlecht, data = ITSDaten, conf.int = TRUE)
+```
+
+
+
+```{r }
+## grafische Darstellung
+ggplot(data = ITSDaten, aes(x = factor(Geschlecht, levels = c("weiblich", 
+                                                              "männlich")), 
+                            y = LOS, 
+                            fill = factor(Geschlecht, levels = c("weiblich", 
+                                                              "männlich")))) +
+   scale_fill_nejm(name = "Geschlecht") +
+  geom_boxplot() + stat_compare_means(label.y = 99, label.x = 1.25) + 
+  ylab("Aufenthaltsdauer in Tagen") + ylim(0, 106) + 
+  annotate(geom = "text", x = c(1, 2), y = c(50, 50), 
+           label = c("n = 175", "n = 325"), color = pal_nejm()(2)) +
+  xlab("Geschlecht")
+
+```
+
+Beide Geschlechter unterscheiden sich kaum in der Aufenthaltsdauer auf der ITS. Das spiegelt sich auch an dem p-value von 0.91 wieder. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(
+Aufenthaltsdauer von Männern:
+
+```{r}
+ITSDaten$Mann <- as.integer(ITSDaten$Geschlecht == "männlich")
+ITSDaten$Frau <- as.integer(ITSDaten$Geschlecht == "weiblich")
+```
+
+```{r, eval=FALSE}
+View(ITSDaten$Geschlecht=="männlich")
+```
+
+
+
+
+
+
+
+```{r}
+wilcox.test(ITSDaten$Mann ~ ITSDaten$LOS, data = ITSDaten, conf.int = TRUE )
+```
+
+wilcox.Test(ITSDaten$Mann ~ factor(ITSDaten§LOS))
+
+
+```{r}
+wilcox.test(ITSDaten$Geschlecht, ITSDaten$LOS, paired = TRUE, conf.int = TRUE)
+```
+)
+
+
+
+
+Aufgabe 9)
+
+Gehen Sie davon aus, dass sich die maximale Körpertemperatur der ITS-Patienten durch eine Normalverteilung beschreiben lässt. Untersuchen Sie, ob sich die Mittelwerte der verschiedenen OP-Gruppen signifikant unterscheiden. Verwenden Sie für die Analyse die Welch 1-Weg ANOVA und lassen Sie Patient 398 unberücksichtigt. Falls Sie ein signifikantes Ergebnis erhalten, untersuchen Sie den Unterschied mit Hilfe geeigneter post hoc Tests genauer. Stellen Sie die Daten und die Testergebnisse geeignet grafisch dar.
+
+
+```{r}
+Andere <- ITSDaten$OP == "Andere"
+oneway.test(Temperatur ~ OP, data = ITSDaten[-398,])
+```
+
+Es wurde kein signifikantes Ergebnis berechnet, weil der berechnet P-Wert über dem angestrebten Signifikanzniveau von 5 % liegt. 
+
+
+
+
+
+
+```{r}
+ITStmp <- ITSDaten[,c("OP", "Temperatur")]
+ITStmp$OP <- factor(ITStmp$OP, levels = c("Magen-Darm-Trakt", "Herz-Thorax", "Neuro", "Trauma", "Andere"))
+ggplot(data=ITStmp[-398,], aes(x=OP, y=Temperatur, fill=OP)) +
+  geom_hline(yintercept = 37.5) + geom_boxplot() + 
+  stat_compare_means(label.y = 43, label.x = 2.0) +
+  ggtitle("Maximale Körpertemperatur in Abhängigkeit von der Temperatur") +
+  ylim(c(33, 43))
+```
+
+Der Graf zeigt, dass die Körpertemperatur aller Patienten auf der ITS in einem ähnlichen Bereich ist. Neuro-Patienten haben die größte Durchschnittstemperatur. 
+
+
+
+##Aufgabe 14)
+
+Betrachten Sie die SAPS II Scores der ITS-Patienten und untersuchen Sie, ob sich die mittleren Werte für die verschiedenen OP-Gruppen unterscheiden. Verwenden Sie hierfür den Kruskal-Wallis Test. Sollten Sie ein signifikantes Ergebnis erhalten, so untersuchen Sie die Unterschiede mit Hilfe von post hoc Tests genauer. Stellen Sie die Daten und die Testergebnisse geeignet grafisch dar.
+
+
+```{r}
+kruskal.test(SAPS.II ~ OP, data = ITSDaten)
+```
+
+Wir erhalten ein signifikantes Ergebnis (p-Value=1.225e-06).
+
+```{r}
+pairwise.t.test(ITSDaten$SAPS.II, ITSDaten$OP, pool.sd = FALSE)
+```
+
+
+```{r}
+## Mittelwerte und SDs
+tapply(ITSDaten$SAPS.II, ITSDaten$OP, mean)
+```
+
+Der gemittelte SAPS.II-Score der verschiedenen Operationen liegt in einem ähnlichen Bereich. Neuro-Patienten haben den höchsten Score mit 51.06522 gefolgt von der Kategorie "Andere"(50.88430). Patienten die eine OP am Magen-Darm-Trakt haben, haben einen mittleren SAPS.II-Score von 44.94937, Herz-Thorax-Patienten einen Scoe von 40.98206 und Traume Patienten einen Score von 40.19355. 
+
+
+```{r}
+tapply(ITSDaten$SAPS.II, ITSDaten$OP, sd)
+```
+
+Die Standardabweichung des SAPS.II-Scores der Kategorie "Andere" ist mit 19.71344 am größten, gefolgt von der Kategorie "Magen-Darm-Trakt" mit einer Standardabweichung von 16,17048. Trauma-Patienten haben eine Standadabweichung des SAPS.II-Scores von 14.02241. Die Patienten der ITS, die eine Neuro-OP machen haben die geringste Standardabweichugn des SAPS.II-Scores mit einem Wert von 13.21851.
+
+
+```{r}
+## Hodges-Lehmann Schätzer
+pairwise.fun(ITSDaten$SAPS.II, ITSDaten$OP, function(x,y) wilcox.test(x,y,conf.int=TRUE)$estimate)
+```
+Ich glaube dieser Test muss an dieser Stelle nicht gemacht werden
+
+
+
+
+
+```{r}
+ITStmp <- ITSDaten[,c("SAPS.II", "OP")]
+ITStmp$OP <- factor(ITStmp$OP, levels = c("Andere", "Herz-Thorax",
+                                             "Neuro", "Magen-Darm-Trakt","Trauma"))
+ggplot(data=ITStmp, aes(x=OP, y=SAPS.II, fill=OP)) +
+  geom_hline(yintercept = 0) + geom_boxplot() + 
+  stat_compare_means(label.y = 100, label.x = 2.0) +
+  ggtitle("Grafische Darstellung") +
+  ylim(c(0, 110))
+```
+
+Diese Grafik veranschaulicht den SAPS.II-Score der verschiedenen Operationsarten. Es wird deutlich, dass der Mittelwert der Standardabweichung der Kategorie "Andere" am größten ist, gefolgt von der Kategorie "Neuro", "Magen-Darm-Trakt", "Trauma" und "Herz-Thorax". 
+
+
+
+
+##Aufgabe 15)
+
+Betrachten Sie nur Patienten mit einer Aufenthaltsdauer von mehr als einem Tag (LOS > 1); z.B. durch   ITSDaten.LOS2 <- ITSDaten[ITSDaten$LOS > 1, ] Wenden Sie den Kruskal-Wallis Test an, um herauszufinden, ob sich die Ergebnis-Gruppen hinsichtlich ihrer mittleren Alters signifikant unterscheiden. Falls Sie, ein signifikantes Ergebnis erhalten, untersuchen Sie die Unterschiede mit Hilfe von post hoc Tests genauer. Stellen Sie die Daten und die Testergebnisse geeignet grafisch dar.
+
+```{r}
+ITSDaten.LOS2 <- ITSDaten[ITSDaten$LOS > 1, ]
+```
+
+```{r}
+kruskal.test(Alter ~ Ergebnis, data=ITSDaten.LOS2,)
+```
+Wir erhalten ein signifikantes Ergebnis (p-value=0.0134)!
+
+```{r }
+kruskal_test(Alter ~ factor(Ergebnis), data = ITSDaten.LOS2, 
+             distribution = "approximate")
+```
+
+Insgesamt kann von einem signifikanten Unterschied ausgegangen werden. 
+
+```{r }
+## paarweise Welch t-Tests 
+pairwise.t.test(ITSDaten.LOS2$Alter, ITSDaten.LOS2$Ergebnis,
+                pool.sd = FALSE)
+## paarweise Wilcoxon-Mann-Whitney U-Tests
+pairwise.wilcox.test(ITSDaten.LOS2$Alter, ITSDaten.LOS2$Ergebnis)
+```
+```{r }
+## Mittelwerte und SDs
+tapply(ITSDaten.LOS2$Alter, ITSDaten.LOS2$Ergebnis, mean)
+tapply(ITSDaten.LOS2$Alter, ITSDaten.LOS2$Ergebnis, sd)
+## Hodges-Lehmann Schätzer
+pairwise.fun(ITSDaten.LOS2$Alter, ITSDaten.LOS2$Ergebnis, 
+             function(x, y) wilcox.test(x, y, conf.int = TRUE)$estimate)
+```
+Der Mittelwert von "nach Hause" unterscheidet sich deutlich von den weiteren Ergebnissen. 
+
+```{r }
+ITStmp <- ITSDaten.LOS2[,c("Ergebnis", "Alter")]
+ITStmp$Ergebnis <- factor(ITStmp$Ergebnis, levels = c("nach Hause", 
+                                                      "Pflege/REHA",
+                                                      "anderes KH", 
+                                                      "Verstorben"))
+ggplot(data=ITStmp, aes(x=Ergebnis, y=Alter, fill=Ergebnis)) +
+   geom_boxplot() + 
+  stat_compare_means(label.y = 100, label.x = 2.0) +
+  ggtitle("Grafische Darstellung") +
+  ylim(c(17, 100))
+```
+
+Am auffälligsten ist, dass sich die Gruppe "nach Hause" am meisten von den anderen unterscheidet. Ihr Durchschnittsalter ist deutlich geringer.
+
+
+
+
+Aufgabe 16)
+```{r}
+id <- c(1,2,3,4,5,6,7,8,9,10)
+t0 <- c(8.8, 8.9, 9.4, 8.7, 9.2, 10.9, 9.5, 11.2, 10.6, 9.2)
+t1 <- c(10.6, 11.3, 11.8, 11.1, 11.8, 12.6, 11.7, 13.0, 12.9, 10.6)
+t2 <- c(12.9, 13.1, 13.2, 13.2, 13.8, 14.7, 13.8, 15.0, 14.7, 13.1)
+#Zuweisung
+Tabelle <- data.frame(id,t0,t1,t2)
+
+
+```
+
+```{r}
+SE.lang <- data.frame (id= rep(Tabelle$id, 3),
+                       score = c(Tabelle$t0,Tabelle$t1, Tabelle$t2),
+                       Zeitpunkt = rep(c("t0", "t1", "t2"), each = 10))
+head(SE.lang)
+```
+```{r}
+tail(SE.lang)
+```
+```{r }
+## Klassische repeated-measures 1-Weg ANOVA
+rm.oneway.test(x = SE.lang$score, g = SE.lang$Zeitpunkt, id = SE.lang$id)
+## Mixed-effects 1-Weg ANOVA
+rm.oneway.test(x = SE.lang$score, g = SE.lang$Zeitpunkt, id = SE.lang$id, 
+               method = "lme")
+## Quade-Test
+rm.oneway.test(x = SE.lang$score, g = SE.lang$Zeitpunkt, id = SE.lang$id,
+               method = "quade")
+## Friedman-Test
+rm.oneway.test(x = SE.lang$score, g = SE.lang$Zeitpunkt, id = SE.lang$id,
+               method = "friedman")
+```
+Die verschiedenen Verfahren sind sich einig und es gibt eine signifikante Veränderung über die Zeit. 
+```{r }
+## Paarweise gepaarte t-Tests
+pairwise.t.test(SE.lang$score, SE.lang$Zeitpunkt, paired = TRUE)
+## Paarweise Wilcoxon Vorzeichenrangtests
+pairwise.wilcox.test(SE.lang$score, SE.lang$Zeitpunkt, paired = TRUE)
+```
+Wir erhalten paarweise signifikante Unterschiede zwischen allen Zeitpunkten. Für die paarweisen Differenzen werden jetzt die Mittelwerte und SD und Median berechnet. 
+```{r }
+## Mittelwerte
+pairwise.fun(SE.lang$score, SE.lang$Zeitpunkt, function(x, y) mean(x-y))
+## SDs
+pairwise.fun(SE.lang$score, SE.lang$Zeitpunkt, function(x, y) sd(x-y))
+## Mediane
+pairwise.fun(SE.lang$score, SE.lang$Zeitpunkt, function(x, y) median(x-y))
+```
+Wir erhalten von t0 zu t2 ansteigende Scores. Die Werte werden nun grafisch dargestellt.
+
+```{r fig.width = 12, fig.height = 9}
+gg1 <- ggpaired( data = Tabelle, cond1 = "t0", cond2 = "t1", 
+         fill = "condition") + ylim(7, 18) +
+  scale_fill_manual(values = pal_jama()(3)[1:2]) +
+  annotate(geom = "text", x = 1.5, y = 17, 
+           label = "Wilcoxon Vorzeichenrangtest, adj. p = 0.006") +
+  annotate(geom = "text", x = 1.5, y = 18, 
+           label = "Gepaarter t-Test, adj. p = 0.002")
+gg2 <- ggpaired( data = Tabelle, cond1 = "t0", cond2 = "t2", 
+         fill = "condition") + ylim(7, 18) +
+  scale_fill_manual(values = pal_jama()(3)[c(1,3)]) + 
+  annotate(geom = "text", x = 1.5, y = 17, 
+           label = "Wilcoxon Vorzeichenrangtest, adj. p = 0.006") +
+  annotate(geom = "text", x = 1.5, y = 18, 
+           label = "Gepaarter t-Test, adj. p < 0.001")
+gg3 <- ggpaired(data = Tabelle, cond1 = "t1", cond2 = "t2", 
+         fill = "condition") + ylim(7, 18) +
+  scale_fill_manual(values = pal_jama()(3)[c(2,3)]) + 
+  annotate(geom = "text", x = 1.5, y = 17, 
+           label = "Wilcoxon Vorzeichenrangtest, adj. p = 0.006") +
+  annotate(geom = "text", x = 1.5, y = 18, 
+           label = "Gepaarter t-Test, adj. p = 0.002")
+grid.arrange(gg1, gg2, gg3, nrow = 1)
+```
+Auch grafisch sind wieder deutliche Unterschiede zwischen den Zeitpunkten zu erkennen, wobei bei den meisten Patienten die Scores über die Zeit ansteigen. 
+
+
+
+
+
+Aufgabe 17)
+
+```{r }
+ITSDaten$logBili<-log(ITSDaten$Bilirubin)
+var.test(logBili~Geschlecht,data=ITSDaten)
+var.test(logBili~Geschlecht,data=ITSDaten[-55,])
+```
+Im Fall der Varianz nehmen die zahlreichen Ausreißer einfluss auf den p-Wert. Selbst die testweise Entfernung des größten Ausreißers kann den p-Wert nur geringfügig korrigieren.
+```{r }
+ITStmp <- ITSDaten[,c("logBili", "Geschlecht")]
+tapply(ITStmp$logBili, ITStmp$Geschlecht, median)
+Mann <- ITStmp$Geschlecht == "männlich"
+ITStmp$logBili[Mann] <- ITStmp$logBili[Mann] - 2.723905
+ITStmp$logBili[!Mann] <- ITStmp$logBili[!Mann] - 2.755476
+ansari.test(logBili ~ Geschlecht, data = ITStmp, conf.int = TRUE)
+```
+Beim Ansari Test kann festgestellt werden dass die Ausreißer deutlich weniger Einfluss auf das Ergebnis nehmen als beim f-Test. Anhand des Ansari Tests kann man davon ausgehen, dass
+die Hypothese einer gleichen Skala nicht abgelehnt werden kann.
+
+```{r }
+
+ITStmp <- ITSDaten[,c("Geschlecht", "logBili")]
+ITStmp$Geschlecht <- factor(ITStmp$Geschlecht, levels = c( 
+                                                      "weiblich","männlich"))
+ggplot(data=ITStmp, aes(x=Geschlecht, y=logBili, fill=Geschlecht)) +
+  geom_hline(yintercept = median(ITSDaten$logBili)) + geom_boxplot() + 
+  stat_compare_means(label.y = 0, label.x = 2.0) +
+  ggtitle("logarythmierte Bilirubinwerte in Abhängigkeit vom Geschlecht") +
+  ylim(c(0, 7))
+```
+
+
+
+
+
+Aufgabe 18)
+```{r }
+#normalverteilung?
+mean(ITSDaten$Alter)
+sd(ITSDaten$Alter)
+mean(ITSDaten$SAPS.II)
+sd(ITSDaten$SAPS.II)
+```
+
+```{r }
+plot(ITSDaten$SAPS.II, ITSDaten$Alter, xlab="SPAS II", ylab = "Alter", main = "SAPS II und LOS")
+```
+
+```{r }
+kruskal.test(Alter ~ SAPS.II, data=ITSDaten)
+```
+
+```{r }
+kruskal_test(Alter ~ factor(SAPS.II), data=ITSDaten, distribution = "approximate")
+```
+
+```{r }
+kruskal_test(SAPS.II ~ factor(Alter), data=ITSDaten, distribution = "approximate")
+```
+```{r }
+kruskal.test(Alter ~ SAPS.II, data=ITSDaten)
+kruskal.test(SAPS.II ~ Alter, data=ITSDaten)
+kruskal_test(Alter ~ factor(SAPS.II), data=ITSDaten, distribution = "approximate")
+kruskal_test(SAPS.II ~ factor(Alter), data=ITSDaten, distribution = "approximate")
+```
+
+
+
+
+```{r }
+curve(expr = dnorm(x, mean=63.06, sd = 14.7666), from= 0, to=100, n=500,
+      col = "#E41A1C", xlab = "Alter in jahren", ylab= "Dichte",
+      main= "Alter")
+curve(expr = dnorm(x, mean=44.884, sd = 17.22417), from= 0, to=100, n=500,
+     add=TRUE, col = "#377EB8", xlab = "SAPS.II Score", ylab= "Dichte",
+      main= "SAPS.II")
+```
+
+
+
+
+
+
+
+
+
+
+
+Aufgabe 19)
+
+Verwenden Sie den chem Datensatz, der im Paket "MASS" (Venables and Ripley (2002)) enthalten ist und den Sie mit folgendem R Code laden können library(MASS) data(chem) Verwenden Sie den Shapiro-Wilk Test sowie den Lilliefors (Kolmogorov-Smirnov), den Cramérvon Mises und den Shapiro-Francia Test aus dem Paket "DescTools" (Signorell et mult. al. (2020)), um den Datensatz hinsichtlich der Normalverteilungsannahme zu untersuchen. Was stellen Sie fest? Überprüfen Sie die Normalverteilungsannahme zusätzlich mittels eines qq-Plots, den Sie zum Beispiel mit Hilfe der Funktionen qqnorm und qqline erzeugen können. Kommen Sie zum selben Ergebnis wie die Tests?Wiederholen Sie anschließend die Normalverteilungstests und den qq-Plot, wobei Sie die Beobachtung 17 von den Berechnungen ausschließen.
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
